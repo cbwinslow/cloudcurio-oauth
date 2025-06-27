@@ -1,0 +1,18 @@
+---
+import Navbar from "../components/Navbar.astro";
+const { user } = Astro.props;
+---
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>CloudCurio OAuth Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link href="/dist/output.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100 min-h-screen">
+    <Navbar user={user} />
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

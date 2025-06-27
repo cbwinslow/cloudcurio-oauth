@@ -1,0 +1,38 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+const { user_id, email } = Astro.request.url.searchParams;
+---
+<MainLayout>
+  <div class="max-w-md mx-auto mt-10 bg-white p-8 rounded shadow-lg">
+    <h2 class="text-2xl font-bold mb-4">Multi-Factor Authentication</h2>
+    <p class="mb-4">A verification code was sent to <strong>{email}</strong>.</p>
+    <form id="otp-form">
+      <input type="hidden" name="user_id" value={user_id} />
+      <input
+        name="otp"
+        type="text"
+        maxlength="6"
+        pattern="\d{6}"
+        class="border p-2 rounded w-full mb-2"
+        placeholder="Enter 6-digit code"
+        required
+      />
+      <button type="submit" class="w-full bg-blue-600 text-white p-2 rounded">Verify</button>
+    </form>
+    <div id="msg" class="text-red-500 mt-2"></div>
+    <script type="module">
+      document.getElementById("otp-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const user_id = e.target.user_id.value;
+        const otp = e.target.otp.value;
+        const res = await fetch("/api/mfa/verify", {
+          method: "POST",
+          body: JSON.stringify({ user_id, otp }),
+          headers: { "Content-Type": "application/json" }
+        });
+        if (res.ok) window.location.href = "/dashboard";
+        else document.getElementById("msg").textContent = await res.text();
+      };
+    </script>
+  </div>
+</MainLayout>

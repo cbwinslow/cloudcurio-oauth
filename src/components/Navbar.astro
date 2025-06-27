@@ -1,0 +1,18 @@
+---
+import Logo from "../../public/logo.svg";
+const { user } = Astro.props;
+---
+
+<nav class="flex items-center p-4 bg-gray-900 text-white">
+  <img src={Logo} alt="CloudCurio Logo" class="h-8 mr-4" />
+  <span class="font-bold text-xl">CloudCurio OAuth Portal</span>
+  <div class="ml-auto flex gap-4">
+    <a href="/" class="hover:underline">Home</a>
+    {user && <a href="/dashboard" class="hover:underline">Dashboard</a>}
+    <a href="/faq" class="hover:underline">FAQ</a>
+    {user
+      ? <a href="/logout" class="hover:underline">Logout</a>
+      : <a href="/login" class="hover:underline">Login</a>
+    }
+  </div>
+</nav>

@@ -1,0 +1,9 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { OAuthLoginCard } from "../components/OAuthLoginCard.jsx";
+
+const user = null;
+---
+<MainLayout user={user}>
+  <OAuthLoginCard />
+</MainLayout>

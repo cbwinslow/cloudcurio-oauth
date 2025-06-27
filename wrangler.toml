@@ -1,0 +1,8 @@
+name = "cloudcurio-oauth"
+main = "src/pages/api/index.ts"
+compatibility_date = "2025-06-27"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cloudcurio_oauth"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"

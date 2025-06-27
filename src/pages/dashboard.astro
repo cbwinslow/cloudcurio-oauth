@@ -1,0 +1,10 @@
+---
+import MainLayout from "../layouts/MainLayout.astro";
+import { UserDashboard } from "../components/UserDashboard.jsx";
+
+const user = Astro.props.user;
+// In a real app, fetch user from session or API
+---
+<MainLayout user={user}>
+  <UserDashboard user={user} />
+</MainLayout>
