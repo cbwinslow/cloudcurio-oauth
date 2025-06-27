@@ -1,0 +1,57 @@
+name: Push to Jira and Create Ticket
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  push-to-jira:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Login to Jira
+        uses: atlassian/generic-jira-auth-action@v1
+        with:
+          url: ${{ secrets.JIRA_URL }}
+          username: ${{ secrets.JIRA_USERNAME }}
+          password: ${{ secrets.JIRA_PASSWORD }}
+
+      - name: Get Commit Information
+        id: commit-info
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --format=%s)
+          COMMIT_AUTHOR=$(git log -1 --format=%ae)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          echo "::set-output name=commit-message::$COMMIT_MESSAGE"
+          echo "::set-output name=commit-author::$COMMIT_AUTHOR"
+          echo "::set-output name=commit-hash::$COMMIT_HASH"
+
+      - name: Create Jira Ticket
+        uses: atlassian/jira-create-issue-action@v1
+        with:
+          url: ${{ secrets.JIRA_URL }}
+          username: ${{ secrets.JIRA_USERNAME }}
+          password: ${{ secrets.JIRA_PASSWORD }}
+          project: ${{ secrets.JIRA_PROJECT }}
+          issue-type: ${{ secrets.JIRA_ISSUE_TYPE }}
+          summary: ${{ steps.commit-info.outputs.commit-message }}
+          description: |
+            Commit Author: ${{ steps.commit-info.outputs.commit-author }}
+            Commit Hash: ${{ steps.commit-info.outputs.commit-hash }}
+          labels: ${{ secrets.JIRA_LABELS }}
+
+      - name: Push to Jira
+        uses: atlassian/jira-update-issue-action@v1
+        with:
+          url: ${{ secrets.JIRA_URL }}
+          username: ${{ secrets.JIRA_USERNAME }}
+          password: ${{ secrets.JIRA_PASSWORD }}
+          issue-id: ${{ steps.create-ticket.outputs.issue-id }}
+          fields:
+            summary: ${{ steps.commit-info.outputs.commit-message }}
+            description: |
+              Commit Author: ${{ steps.commit-info.outputs.commit-author }}
+              Commit Hash: ${{ steps.commit-info.outputs.commit-hash }}
