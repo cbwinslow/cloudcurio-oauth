@@ -1,16 +1,16 @@
-const ATTEMPT_LIMIT = 10;
-const WINDOW_MINUTES = 10;
+const LOGIN_ATTEMPT_LIMIT = 10;
+const LOGIN_WINDOW_MINUTES = 15;
 
-export async function isRateLimited(user_id: string, ip: string, db: D1Database) {
-  const { results } = await db.prepare(
-    "SELECT COUNT(*) as count FROM login_attempts WHERE (user_id = ? OR ip = ?) AND timestamp >= datetime('now', ?)"
-  ).bind(user_id, ip, `-${WINDOW_MINUTES} minutes`).all();
+export async function isRateLimited(db: D1Database, ip: string, userId?: string) {
+  let query = "SELECT COUNT(*) as count FROM audit_logs WHERE event_type LIKE '%login%' AND ip_address = ? AND created_at >= datetime('now', ?)";
+  const params: (string | number)[] = [ip, `-${LOGIN_WINDOW_MINUTES} minutes`];
 
-  return results[0]?.count >= ATTEMPT_LIMIT;
-}
+  if (userId) {
+    query += " OR user_id = ?";
+    params.push(userId);
+  }
 
-export async function logLoginAttempt(user_id: string, ip: string, success: boolean, db: D1Database) {
-  await db.prepare(
-    "INSERT INTO login_attempts (user_id, ip, success, timestamp) VALUES (?, ?, ?, CURRENT_TIMESTAMP)"
-  ).bind(user_id, ip, success ? 1 : 0).run();
+  const { results } = await db.prepare(query).bind(...params).all();
+  const count = (results[0]?.count as number) ?? 0;
+  return count >= LOGIN_ATTEMPT_LIMIT;
 }

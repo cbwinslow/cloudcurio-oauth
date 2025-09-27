@@ -6,3 +6,7 @@ compatibility_date = "2025-06-27"
 binding = "DB"
 database_name = "cloudcurio_oauth"
 database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "cloudcurio_uploads"

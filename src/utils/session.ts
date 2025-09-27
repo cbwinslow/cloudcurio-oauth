@@ -1,16 +1,23 @@
-import { env } from "./env";
-import { nanoid } from "nanoid";
+import { createSession as dbCreateSession, getSession, getUserById } from "./db";
+import type { APIContext } from "astro";
 
-export async function createSession(user_id: string, db: D1Database) {
-  const sessionId = nanoid();
-  const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7); // 7 days
-  await db.prepare(
-    "INSERT INTO sessions (id, user_id, created_at, expires_at) VALUES (?, ?, CURRENT_TIMESTAMP, ?)"
-  ).bind(sessionId, user_id, expiresAt.toISOString()).run();
+export async function createSession(db: D1Database, userId: string, expiresAt: Date): Promise<string> {
+  const sessionId = await dbCreateSession(db, userId, expiresAt);
   return sessionId;
 }
 
-export function setSessionCookie(cookies, sessionId: string) {
+export async function getUserFromSession(context: APIContext) {
+  const sessionId = context.cookies.get("session")?.value;
+  if (!sessionId) return null;
+
+  const session = await getSession(context.locals.runtime.env.DB, sessionId);
+  if (!session || new Date(session.expires_at) < new Date()) return null;
+
+  const user = await getUserById(context.locals.runtime.env.DB, session.user_id);
+  return user;
+}
+
+export function setSessionCookie(cookies: APIContext["cookies"], sessionId: string) {
   cookies.set("session", sessionId, {
     path: "/",
     httpOnly: true,

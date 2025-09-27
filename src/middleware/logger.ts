@@ -1,6 +1,7 @@
-import { logTraffic } from "../utils/logger";
+import { logRequest } from "../utils/logger";
+import { defineMiddleware } from "astro:middleware";
 
-export async function onRequest({ request, locals }, next) {
-  await logTraffic(request, locals.runtime.env.DB);
+export const onRequest = defineMiddleware(async (context, next) => {
+  await logRequest(context);
   return next();
-}
+});
