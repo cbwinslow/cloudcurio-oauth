@@ -1,0 +1,39 @@
+---
+import MainLayout from "../../layouts/MainLayout.astro";
+import { getUserFromSession } from "../../utils/session";
+import { requireAdmin } from "../../utils/rbac";
+import { getUsers } from "../../utils/db";
+
+const user = await getUserFromSession(Astro);
+if (!user) return Response.redirect(new URL("/login", Astro.site));
+requireAdmin(user);
+
+const { users } = await getUsers(Astro.locals.runtime.env.DB);
+---
+<MainLayout user={user}>
+  <div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">User Management</h1>
+    <table class="min-w-full bg-white">
+      <thead>
+        <tr>
+          <th class="py-2 px-4 border-b">ID</th>
+          <th class="py-2 px-4 border-b">Email</th>
+          <th class="py-2 px-4 border-b">Name</th>
+          <th class="py-2 px-4 border-b">Role</th>
+          <th class="py-2 px-4 border-b">Created At</th>
+        </tr>
+      </thead>
+      <tbody>
+        {users.map(u => (
+          <tr>
+            <td class="py-2 px-4 border-b">{u.id}</td>
+            <td class="py-2 px-4 border-b">{u.email}</td>
+            <td class="py-2 px-4 border-b">{u.name}</td>
+            <td class="py-2 px-4 border-b">{u.role}</td>
+            <td class="py-2 px-4 border-b">{new Date(u.created_at).toLocaleString()}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</MainLayout>
