@@ -10,17 +10,27 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^4.0.0",
-    "@astrojs/react": "^3.0.0",
-    "@astrojs/tailwind": "^4.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "zod": "^3.22.4",
+    "@astrojs/cloudflare": "^12.6.9",
+    "@astrojs/react": "^4.4.0",
+    "@astrojs/tailwind": "^5.1.5",
+    "@radix-ui/react-slot": "^1.2.3",
+    "astro": "^5.14.1",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "framer-motion": "^11.0.0",
     "js-cookie": "^3.0.1",
     "nanoid": "^4.0.2",
-    "framer-motion": "^11.0.0"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tailwind-merge": "^3.3.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "prettier": "^3.0.0"
+    "@playwright/test": "^1.55.1",
+    "autoprefixer": "^10.4.21",
+    "prettier": "^3.0.0",
+    "tailwindcss": "^3.4.18",
+    "tailwindcss-animate": "^1.0.7",
+    "wrangler": "^4.42.0"
   }
 }
