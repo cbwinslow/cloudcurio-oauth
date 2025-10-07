@@ -1,8 +1,16 @@
 import type { APIRoute } from "astro";
-export const get: APIRoute = async ({ locals }) => {
+import { getUserSessions } from "../../../data/sessions";
+
+export const GET: APIRoute = async ({ locals }) => {
   const user = locals.user;
-  if (!user) return new Response("Unauthorized", { status: 401 });
+  if (!user) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
   const db = locals.runtime.env.DB;
-  const { results } = await db.prepare("SELECT * FROM sessions WHERE user_id = ?").bind(user.id).all();
-  return new Response(JSON.stringify(results), { headers: { "Content-Type": "application/json" } });
+  const sessions = await getUserSessions(db, user.id);
+
+  return new Response(JSON.stringify(sessions), {
+    headers: { "Content-Type": "application/json" },
+  });
 };
