@@ -1,13 +1,26 @@
 import type { APIRoute } from "astro";
-import { env } from "../../utils/env";
+import { nanoid } from "nanoid";
+import { env } from "../../../utils/env";
 
-export const get: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ cookies }) => {
   const providerUrl = env.OAUTH_PROVIDER_URL;
   const clientId = env.OAUTH_CLIENT_ID;
   const callbackUrl = env.OAUTH_CALLBACK_URL;
-  const state = Math.random().toString(36).substring(2);
+  const state = nanoid(16);
 
-  const url = `${providerUrl}/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(callbackUrl)}&response_type=code&scope=openid%20email%20profile&state=${state}`;
+  cookies.set("oauth_state", state, {
+    path: "/",
+    httpOnly: true,
+    secure: import.meta.env.PROD,
+    maxAge: 60 * 10, // 10 minutes
+  });
 
-  return Response.redirect(url, 302);
+  const url = new URL(`${providerUrl}/authorize`);
+  url.searchParams.set("client_id", clientId);
+  url.searchParams.set("redirect_uri", callbackUrl);
+  url.searchParams.set("response_type", "code");
+  url.searchParams.set("scope", "openid email profile");
+  url.searchParams.set("state", state);
+
+  return Response.redirect(url.toString(), 302);
 };
