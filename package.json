@@ -10,14 +10,14 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@astrojs/cloudflare": "^4.0.0",
+    "@astrojs/cloudflare": "^13.2.1",
     "@astrojs/react": "^3.0.0",
     "@astrojs/tailwind": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "zod": "^3.22.4",
     "js-cookie": "^3.0.1",
-    "nanoid": "^4.0.2",
+    "nanoid": "^5.1.9",
     "framer-motion": "^11.0.0"
   },
   "devDependencies": {
